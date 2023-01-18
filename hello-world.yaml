@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+spec:
+  #replicas: 2
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      name: hello-world
+      labels:
+        app: hello-world
+    spec:
+      containers:
+      - name: hello-world
+        image: docker.io/heramb03/hello-world-docker:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 2m
+            memory: 20Mi
+        env:
+        - name: NAME
+          valueFrom:
+           secretKeyRef:
+             name: hello-world-secret
+             key: NAME
+      imagePullSecrets:
+      - name: myregistrykey
+  #minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1    
+  #    maxSurge: 2
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: hello-world
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-wolrd-external-ip
+spec:
+  selector:
+    app: hello-world
+  type: LoadBalancer
+  ports:
+  -  protocol: TCP
+     port: 80
+     targetPort: 80
+     nodePort: 30001
+
+---
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+ name: hello-world-horizontal
+ labels:
+  app: hello-world
+spec:
+ scaleTargetRef:
+   apiVersion: apps/v1
+   kind: Deployment
+   name: hello-world
+ minReplicas: 1
+ maxReplicas: 20
+ targetCPUUtilizationPercentage: 10
