@@ -28,7 +28,7 @@ spec:
         - name: NAME
           valueFrom:
            secretKeyRef:
-             name: hello-world-secret
+             name: hello-world-secret-test
              key: NAME
       imagePullSecrets:
       - name: myregistrykey
