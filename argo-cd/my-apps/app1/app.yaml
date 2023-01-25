@@ -5,7 +5,7 @@ metadata:
   labels:
     app: hello-world-test
 spec:
-  #replicas: 2
+  ##replicas: 2
   selector:
     matchLabels:
       app: hello-world-test
