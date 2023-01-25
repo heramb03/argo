@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: my-app-test-1
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     namespace: test
@@ -12,9 +14,15 @@ spec:
     path: argo-cd/my-apps/app1
     repoURL: https://github.com/heramb03/argo.git
     targetRevision: main
+    plugin:
+      name: argocd-vault-plugin-helm
+      env:
+        - name: helm_args
+          value: -f values.yaml
   syncPolicy:
     syncOptions:
     - CreateNamespace=true
 
     automated:
       selfHeal: true
+      prune: true

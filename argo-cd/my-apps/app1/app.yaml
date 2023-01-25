@@ -25,11 +25,11 @@ spec:
             cpu: 2m
             memory: 20Mi
         env:
-        - name: NAME
+        - name: password
           valueFrom:
            secretKeyRef:
              name: hello-world-secret-test
-             key: NAME
+             key: password
       imagePullSecrets:
       - name: myregistrykey
   #minReadySeconds: 10
